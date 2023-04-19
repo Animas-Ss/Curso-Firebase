@@ -1,11 +1,34 @@
-import React from 'react'
+import {useEffect, useState}from 'react'
 import logOut from '../functions/logOut';
+import Navbar from '../components/Navbar';
+import PendienteForm from '../components/PendienteForm';
+import getAllPEndientes from '../functions/leerPendientes';
+import PendienteCard from '../components/PendienteCard';
 
-const Home = () => {
+const Home = ({ user }) => {
+  const [allPendientes, setAllPendientes] = useState(null);
+
+  const refresh = () => {
+    getAllPEndientes()
+    .then(pendientes => {
+      setAllPendientes(pendientes);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
+
+  useEffect(() => {
+    refresh()
+  }, [])
+  
   return (
-    <div>
-        Home
-        <button className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline' onClick={logOut}>Log out</button>
+    <div className='w-screen h-screen flex flex-col'>
+        <Navbar usuario={user}/> 
+        <PendienteForm refresh={refresh}/>
+        {allPendientes && (
+          allPendientes.map( pendiente => <PendienteCard pendiente={pendiente}/>)
+        )}
     </div>
   )
 }
